@@ -5,11 +5,12 @@ module Api
         @movies = Movie.all
 
         if params[:query].present?
-          @movies = @movies.where("title ILIKE ?", "%#{params[:query]}%")
+          @movies = @movies.where("title ILIKE ?", "%#{Movie.sanitize_sql_like(params[:query])}%")
         end
 
         if params[:genre].present?
-          @movies = @movies.where("genre ILIKE ?", params[:genre])
+          sanitized_genre = Movie.sanitize_sql_like(params[:genre])
+          @movies = @movies.where("genre ILIKE ?", "%#{sanitized_genre}%")
         end
 
         # Mapeia os filmes e busca o pôster caso ainda não esteja salvo
