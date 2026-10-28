@@ -5,7 +5,8 @@ module Api
         @movies = Movie.all
 
         if params[:query].present?
-          @movies = @movies.where("title ILIKE ?", "%#{Movie.sanitize_sql_like(params[:query])}%")
+          sanitize_query = Movie.sanitize_sql_like(params[:query])
+          @movies = @movies.where("title ILIKE ?", "%#{sanitize_query}%")
         end
 
         if params[:genre].present?
@@ -29,10 +30,6 @@ module Api
         movie = Movie.find_by(id: params[:id])
 
         if movie
-          if movie.poster_url.blank?
-            poster = OmdbService.fetch_poster(movie.title)
-            movie.update(poster_url: poster) if poster.present?
-          end
           render json: movie
         else
           render json: { error: "Filme não encontrado" }, status: :not_found
