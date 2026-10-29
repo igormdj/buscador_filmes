@@ -5,8 +5,8 @@ class OmdbService
     return nil if title.blank?
 
     api_key = ENV.fetch("OMDB_API_KEY", nil)
-    unless api_key
-      Rails.logger.error "[OmdbService] OMDB_API_KEY não foi configurada!"
+    if api_key.blank?
+      Rails.logger.error "[OmdbService] ERRO CRÍTICO: A variável OMDB_API_KEY não foi configurada!"
       return nil
     end
 
