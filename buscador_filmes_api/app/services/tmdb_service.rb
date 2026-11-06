@@ -1,7 +1,7 @@
 class TmdbService
   BASE_URL = "https://api.themoviedb.org/3"
   IMAGE_BASE_URL = "https://image.tmdb.org/t/p/w500" # Tamanho w500 tem boa resolução
-  API_KEY = ENV.fetch("TMDB_API_KEY", "sua_chave_aqui")
+  API_KEY = "39aab49a2e02f96c37ce10a310a3ab77"
 
   def self.fetch_poster(title)
     return nil if title.blank?

@@ -27,10 +27,7 @@ export default function Home() {
       const response = await api.get('/movies', { params, signal });
       setMovies(response.data);
     } catch (err) {
-      if (axios.isCancel(err) || err.name === 'CanceledError') {
-        return;
-      }
-      
+      if (axios.isCancel(err) || err.name === 'CanceledError') return;
       console.error('Erro ao buscar filmes:', err);
       setError('Não foi possível carregar os filmes. Verifique se o servidor backend está rodando.');
     } finally {
@@ -40,7 +37,6 @@ export default function Home() {
 
   useEffect(() => {
     const controller = new AbortController();
-
     const timer = setTimeout(() => {
       fetchMovies(query, selectedGenre, controller.signal);
     }, 400);
@@ -54,14 +50,20 @@ export default function Home() {
   return (
     <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px', color: '#fff', fontFamily: 'sans-serif' }}>
       
-      {/* HEADER E BUSCA */}
       <header style={{ textAlign: 'center', marginBottom: '30px' }}>
         <h1 style={{ fontSize: '2.5rem', marginBottom: '20px' }}>🎬 Buscador de Filmes</h1>
         
         <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', alignItems: 'center' }}>
+          
+          {/* Campo de Busca Acessível */}
           <div style={{ position: 'relative', width: '100%', maxWidth: '500px' }}>
+            <label htmlFor="movie-search" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0 }}>
+              Buscar filmes por título
+            </label>
             <input
-              type="text"
+              id="movie-search"
+              type="search"
+              aria-label="Buscar filmes por título"
               placeholder="Digite o título, ator ou diretor..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -79,11 +81,13 @@ export default function Home() {
             <Search size={20} color="#888" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
           </div>
 
-          <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+          {/* Botões de Filtro com aria-pressed */}
+          <div role="group" aria-label="Filtros de gênero" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
             {GENRES.map((genre) => (
               <button
                 key={genre}
                 onClick={() => setSelectedGenre(genre)}
+                aria-pressed={selectedGenre === genre}
                 style={{
                   padding: '8px 16px',
                   borderRadius: '20px',
@@ -102,7 +106,7 @@ export default function Home() {
         </div>
       </header>
 
-      {/* MAIN CONTENT */}
+      {/* Conteúdo Principal */}
       <main>
         {loading ? (
           <p style={{ textAlign: 'center', color: '#aaa', marginTop: '40px' }}>A carregar filmes...</p>
@@ -129,7 +133,16 @@ export default function Home() {
             {movies.map((movie) => (
               <div
                 key={movie.id}
+                role="button"
+                tabIndex={0}
+                aria-label={`Ver detalhes do filme ${movie.title}`}
                 onClick={() => navigate(`/movies/${movie.id}`)}
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    navigate(`/movies/${movie.id}`);
+                  }
+                }}
                 style={{
                   background: '#1a1a1a',
                   borderRadius: '10px',
@@ -142,7 +155,7 @@ export default function Home() {
                 onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1.0)'}
               >
                 {movie.poster_url && movie.poster_url !== 'N/A' ? (
-                  <img src={movie.poster_url} alt={movie.title} style={{ width: '100%', height: '280px', objectFit: 'cover' }} />
+                  <img src={movie.poster_url} alt={`Pôster do filme ${movie.title}`} style={{ width: '100%', height: '280px', objectFit: 'cover' }} />
                 ) : (
                   <div style={{ height: '280px', background: '#262626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                     <Film size={40} color="#555" />
