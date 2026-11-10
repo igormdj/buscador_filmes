@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import api from '../services/api';
 import axios from 'axios';
 import { Search, Film, Star, AlertTriangle, RefreshCw } from 'lucide-react';
+import '../App.css'; // Importa as classes CSS
 
 const GENRES = ['Todos', 'Ação', 'Aventura', 'Animação', 'Comédia', 'Drama', 'Fantasia', 'Ficção Científica'];
 
@@ -48,56 +49,36 @@ export default function Home() {
   }, [query, selectedGenre]);
 
   return (
-    <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '20px', color: '#fff', fontFamily: 'sans-serif' }}>
+    <div className="app-container">
       
-      <header style={{ textAlign: 'center', marginBottom: '30px' }}>
-        <h1 style={{ fontSize: '2.5rem', marginBottom: '20px' }}>🎬 Buscador de Filmes</h1>
+      <header className="app-header">
+        <h1 className="app-title">🎬 Buscador de Filmes</h1>
         
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '15px', alignItems: 'center' }}>
+        <div className="search-controls">
           
-          {/* Campo de Busca Acessível */}
-          <div style={{ position: 'relative', width: '100%', maxWidth: '500px' }}>
+          <div className="search-input-wrapper">
             <label htmlFor="movie-search" style={{ position: 'absolute', width: '1px', height: '1px', padding: 0, overflow: 'hidden', clip: 'rect(0,0,0,0)', border: 0 }}>
               Buscar filmes por título
             </label>
             <input
               id="movie-search"
               type="search"
+              className="search-input"
               aria-label="Buscar filmes por título"
               placeholder="Digite o título, ator ou diretor..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              style={{
-                width: '100%',
-                padding: '12px 20px 12px 45px',
-                borderRadius: '25px',
-                border: '1px solid #444',
-                background: '#222',
-                color: '#fff',
-                fontSize: '1rem',
-                outline: 'none'
-              }}
             />
-            <Search size={20} color="#888" style={{ position: 'absolute', left: '15px', top: '50%', transform: 'translateY(-50%)' }} />
+            <Search size={20} className="search-icon" />
           </div>
 
-          {/* Botões de Filtro com aria-pressed */}
-          <div role="group" aria-label="Filtros de gênero" style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', justifyContent: 'center' }}>
+          <div role="group" aria-label="Filtros de gênero" className="genre-group">
             {GENRES.map((genre) => (
               <button
                 key={genre}
                 onClick={() => setSelectedGenre(genre)}
                 aria-pressed={selectedGenre === genre}
-                style={{
-                  padding: '8px 16px',
-                  borderRadius: '20px',
-                  border: 'none',
-                  background: selectedGenre === genre ? '#e50914' : '#333',
-                  color: '#fff',
-                  cursor: 'pointer',
-                  fontSize: '0.85rem',
-                  fontWeight: selectedGenre === genre ? 'bold' : 'normal'
-                }}
+                className={`genre-btn ${selectedGenre === genre ? 'genre-btn--active' : ''}`}
               >
                 {genre}
               </button>
@@ -106,36 +87,29 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Conteúdo Principal */}
       <main>
         {loading ? (
-          <p style={{ textAlign: 'center', color: '#aaa', marginTop: '40px' }}>A carregar filmes...</p>
+          <p className="state-message">A carregar filmes...</p>
         ) : error ? (
-          <div style={{ textAlign: 'center', marginTop: '40px', padding: '30px', background: '#2a1a1a', borderRadius: '12px', border: '1px solid #552222' }}>
-            <AlertTriangle size={48} color="#e50914" style={{ marginBottom: '15px' }} />
-            <h3 style={{ margin: '0 0 10px 0', color: '#fff' }}>Ops! Algo deu errado</h3>
-            <p style={{ color: '#ccc', marginBottom: '20px' }}>{error}</p>
-            <button
-              onClick={() => fetchMovies(query, selectedGenre)}
-              style={{
-                display: 'inline-flex', alignItems: 'center', gap: '8px',
-                padding: '10px 20px', borderRadius: '20px', border: 'none',
-                background: '#e50914', color: '#fff', cursor: 'pointer', fontWeight: 'bold'
-              }}
-            >
+          <div className="error-card">
+            <AlertTriangle size={48} color="var(--color-primary)" style={{ marginBottom: '15px' }} />
+            <h3 style={{ margin: '0 0 10px 0' }}>Ops! Algo deu errado</h3>
+            <p className="state-message" style={{ marginTop: 0, marginBottom: '20px' }}>{error}</p>
+            <button onClick={() => fetchMovies(query, selectedGenre)} className="retry-button">
               <RefreshCw size={16} /> Tentar novamente
             </button>
           </div>
         ) : movies.length === 0 ? (
-          <p style={{ textAlign: 'center', color: '#aaa', marginTop: '40px' }}>Nenhum filme encontrado.</p>
+          <p className="state-message">Nenhum filme encontrado.</p>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '20px' }}>
+          <div className="movie-grid">
             {movies.map((movie) => (
               <div
                 key={movie.id}
                 role="button"
                 tabIndex={0}
                 aria-label={`Ver detalhes do filme ${movie.title}`}
+                className="movie-card"
                 onClick={() => navigate(`/movies/${movie.id}`)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {
@@ -143,34 +117,22 @@ export default function Home() {
                     navigate(`/movies/${movie.id}`);
                   }
                 }}
-                style={{
-                  background: '#1a1a1a',
-                  borderRadius: '10px',
-                  overflow: 'hidden',
-                  cursor: 'pointer',
-                  border: '1px solid #2a2a2a',
-                  transition: 'transform 0.2s'
-                }}
-                onMouseEnter={(e) => e.currentTarget.style.transform = 'scale(1.03)'}
-                onMouseLeave={(e) => e.currentTarget.style.transform = 'scale(1.0)'}
               >
                 {movie.poster_url && movie.poster_url !== 'N/A' ? (
-                  <img src={movie.poster_url} alt={`Pôster do filme ${movie.title}`} style={{ width: '100%', height: '280px', objectFit: 'cover' }} />
+                  <img src={movie.poster_url} alt={`Pôster do filme ${movie.title}`} className="movie-card__poster" />
                 ) : (
-                  <div style={{ height: '280px', background: '#262626', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <div className="movie-card__placeholder">
                     <Film size={40} color="#555" />
                   </div>
                 )}
 
-                <div style={{ padding: '12px' }}>
-                  <h3 style={{ margin: '0 0 6px 0', fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                    {movie.title}
-                  </h3>
-                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', color: '#aaa', fontSize: '0.8rem' }}>
+                <div className="movie-card__info">
+                  <h3 className="movie-card__title">{movie.title}</h3>
+                  <div className="movie-card__meta">
                     <span>{movie.release_year || 'N/A'}</span>
                     {movie.rating && (
-                      <span style={{ display: 'flex', alignItems: 'center', gap: '3px', color: '#f3ce13' }}>
-                        <Star size={14} fill="#f3ce13" /> {movie.rating}
+                      <span className="movie-card__rating">
+                        <Star size={14} fill="var(--color-star)" /> {movie.rating}
                       </span>
                     )}
                   </div>
