@@ -2,35 +2,19 @@ module Api
   module V1
     class MoviesController < ApplicationController
       def index
-        @movies = Movie.all
+       movies = Movie.search_title(params[:query])
+                .with_genre(params[:genre])
+                .order(rating: :desc, id: :asc)
+                .limit(20)
 
-        if params[:query].present?
-          sanitize_query = Movie.sanitize_sql_like(params[:query])
-          @movies = @movies.where("title ILIKE ?", "%#{sanitize_query}%")
-        end
-
-        if params[:genre].present?
-          sanitized_genre = Movie.sanitize_sql_like(params[:genre])
-          @movies = @movies.where("genre ILIKE ?", "%#{sanitized_genre}%")
-        end
-
-        # Mapeia os filmes e busca o pôster caso ainda não esteja salvo
-        movies_with_posters = @movies.limit(20).map do |movie|
-          if movie.poster_url.blank?
-            poster = OmdbService.fetch_poster(movie.title)
-            movie.update(poster_url: poster) if poster.present?
-          end
-          movie
-        end
-
-        render json: movies_with_posters
+        render json: movies.map(&:as_api_json)
       end
 
       def show
         movie = Movie.find_by(id: params[:id])
 
         if movie
-          render json: movie
+          render json: movie.as_api_json
         else
           render json: { error: "Filme não encontrado" }, status: :not_found
         end
