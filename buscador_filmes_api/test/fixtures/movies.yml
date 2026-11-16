@@ -1,19 +1,23 @@
-# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+avatar:
+  title: Avatar
+  genre: Action Adventure Fantasy Science Fiction
+  release_year: 2009
+  rating: 7.9
+  description: Um fuzileiro naval paraplégico é enviado para a lua Pandora.
+  poster_url: https://example.com/avatar.jpg
 
-one:
-  title: MyString
-  genre: MyString
-  release_year: 1
-  description: MyText
-  rating: 9.99
-  poster_url: MyString
-  tmdb_id: MyString
+dark_knight:
+  title: The Dark Knight
+  genre: Drama Action Crime Thriller
+  release_year: 2008
+  rating: 9.0
+  description: Batman enfrenta o Coringa em Gotham City.
+  poster_url: https://example.com/batman.jpg
 
-two:
-  title: MyString
-  genre: MyString
-  release_year: 1
-  description: MyText
-  rating: 9.99
-  poster_url: MyString
-  tmdb_id: MyString
+indie_drama:
+  title: Quiet Story
+  genre: Drama
+  release_year: 2021
+  rating: 6.5
+  description: Um drama independente sem capa cadastrada.
+  poster_url:
